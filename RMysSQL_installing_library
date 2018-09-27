@@ -1,0 +1,16 @@
+install.packages("RMySQL")
+library(RMySQL)
+ucsDB <- dbConnect(MySQL(), user="genome",host="genome-mysql.cse.ucsc.edu")
+result <- dbGetQuery(ucsDB,"show databases;");
+dbDisconnect(ucsDB)
+#expected: TRUE
+head(result)
+
+#expected 
+#   Database
+#1  ailMel1
+#2  allMis1
+#3  anoCar1
+#4  anoCar2
+#5  anoGam1
+#6  apiMel1
