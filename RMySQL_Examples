@@ -1,0 +1,81 @@
+#Connecting to hg19 and listing tables
+hg19 <- dbConnect(MySQL(), user="genome",db="hg19",host="genome-mysql.cse.ucsc.edu")
+allTables <- dbListTables(hg19)
+
+length(allTables)
+#expected
+#[1] 11132
+
+allTables[1:5]
+#
+#[1] "HInv" 
+[1] "HInv"         "HInvGeneMrna" "acembly"      "acemblyClass" "acemblyPep"
+
+#Get dimensions of a specific table
+
+dbListFields(hg19, "affyU133Plus2")
+
+#expected
+# [1] "bin"         "matches"     "misMatches"  "repMatches"  "nCount"      "qNumInsert" 
+# [7] "qBaseInsert" "tNumInsert"  "tBaseInsert" "strand"      "qName"       "qSize"      
+# [13] "qStart"      "qEnd"        "tName"       "tSize"       "tStart"      "tEnd"       
+# [19] "blockCount"  "blockSizes"  "qStarts"     "tStarts"    
+
+dbGetQuery(hg19,"select count(*) from affyU133Plus2")
+
+#expected
+#count(*)
+#1    58463
+
+
+#Read from the table
+affyData<-dbReadTable(hg19,"affyU133Plus2")
+head(affyData)
+
+
+#expected result
+#  bin matches misMatches repMatches nCount qNumInsert qBaseInsert tNumInsert tBaseInsert strand
+#1 585     530          4          0     23          3          41          3         898      -
+#2 585    3355         17          0    109          9          67          9       11621      -
+#3 585    4156         14          0     83         16          18          2          93      -
+#4 585    4667          9          0     68         21          42          3        5743      -
+#5 585    5180         14          0    167         10          38          1          29      -
+#6 585     468          5          0     14          0           0          0           0      -
+#         qName qSize qStart qEnd tName     tSize tStart  tEnd blockCount
+
+
+# Select a specific subset
+query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3")
+affyMis <- fetch(query);
+quantile(affyMis$misMatches)
+
+#expected
+#  0%  25%  50%  75% 100% 
+#   1    1    2    2    3 
+
+#not expected - but occurs when connection has gone away.
+#> query <- dbSendQuery(hg19, "select *from affyU133Plus2 where misMatches between 1 and 3")
+#Error in .local(conn, statement, ...) : 
+#  could not run statement: MySQL server has gone away
+
+#to connect again - just rerun the command: 
+#hg19 <- dbConnect(MySQL(), user="genome",db="hg19",host="genome-mysql.cse.ucsc.edu")
+
+#fetch to bring only specific number of records
+affyMisSmall <-fetch(query, n=10); dbClearResult(query);
+
+#cleaning the query
+dbClearResult(query)
+#expected result: [1] TRUE
+
+dim(affyMisSmall)
+#expected a data frame of 10 rows and 22 columns
+#[1] 10 22
+
+#DON´T FORGET TO CLOSE THE CONNECTION
+dbDisconnect(hg19)
+
+#close as soon as possible
+
+
+
