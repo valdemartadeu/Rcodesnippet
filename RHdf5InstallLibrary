@@ -1,0 +1,25 @@
+#installing the pack
+source("http://bioconductor.org/biocLite.R")
+
+#expected response: 
+#....
+#Downloaded binary packages are in
+#        C:\...\AppData\Local\Temp\Rtmpwdupyd\downloaded_packages
+#Bioconductor version 3.7 (BiocInstaller 1.30.0), ?biocLite for help
+
+#continuing
+biocLite("rhdf5")
+
+#expected response:
+#...
+#...
+#The downloaded source packages are in
+#        ‘C:\...t\AppData\Local\Temp\Rtmpwdupyd\downloaded_packages’
+
+library(rhdf5)
+created = h5createFile("example.h5")
+created
+
+#expected response:
+#[1] TRUE
+
