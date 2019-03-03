@@ -1,0 +1,26 @@
+#Accessing twitter from R
+myapp = oauth_app("twitter", key="yourConsumerKeyHere", secret="yourConsumerSecreteHere")
+sig = sign_oauth1.0(myapp, token = "yourTokenHere", token_secret = "yourTokenSecretHere")
+homeTL = GET("https://api.twitter.com/1.1/statuses/home_timeline.json",sig)
+
+#converting the json object
+json1 = content(homeTL)
+json2 = jsonlite::fromJSON (toJSON(json1))
+json2 = [1,1:4]
+
+## FOREIGN PACKAGES
+minilab, s, sas, spss, stata, systat,
+
+basic functions read.foo
+read.arff(weka)
+read.dta(stata)
+read.mtp(minitab)
+read.octave(octave)
+read.spss(spss)
+read.xport(sas)
+# http://cran.r-project.org/web/packages/foreign/foreign.pdf
+#https://code.google.com.br/p/rpostgresql..
+#rmongo, rodbc for postgreql,mysql, microsoft access and sqlite.
+#reading images = jpeg, readbitmap, png, ebimage,
+#reading gis data - rdgal, rgeos, raster.
+#reading musica data - tuneR, seewave
