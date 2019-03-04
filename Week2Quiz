@@ -1,0 +1,102 @@
+##usei como ajuda: https://github.com/mGalarnyk/datasciencecoursera/blob/master/3_Getting_and_Cleaning_Data/quizzes/quiz2.md
+
+
+
+#### Exercise 1##########
+
+Register an application with the Github API here https://github.com/settings/applications. 
+Access the API to get information on your instructors repositories 
+(hint: this is the url you want "https://api.github.com/users/jtleek/repos"). 
+Use this data to find the time that the datasharing repo was created. What time was it created?
+
+This tutorial may be useful (https://github.com/hadley/httr/blob/master/demo/oauth2-github.r).
+You may also need to run the code in the base R package and not R studio.
+
+library(httr)
+
+# 1. Find OAuth settings for github:
+#    http://developer.github.com/v3/oauth/
+oauth_endpoints("github")
+
+# 2. To make your own application, register at
+#    https://github.com/settings/developers. Use any URL for the homepage URL
+#    (http://github.com is fine) and  http://localhost:1410 as the callback url
+#
+#    Replace your key and secret below.
+myapp <- oauth_app("github",
+  key = "56b637a5baffac62cad9",
+  secret = "8e107541ae1791259e9987d544ca568633da2ebf"
+)
+# 3. Get OAuth credentials
+github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
+
+# 4. Use API
+gtoken <- config(token = github_token)
+req <- GET("https://api.github.com/rate_limit", gtoken)
+stop_for_status(req)
+content(req)
+
+# OR:
+req <- with_config(gtoken, GET("https://api.github.com/rate_limit"))
+stop_for_status(req)
+content(req)
+
+##### Como fui fazendo
+#install.packages("jsonlite")
+#install.packages("httpuv")
+#install.packages("httr")
+
+library(jsonlite)
+library(httpuv)
+library(httr)
+
+# Can be github, linkedin etc depending on application
+oauth_endpoints("github")
+
+# Change based on your appname, key, and secret 
+myapp <- oauth_app(appname = "firstApplicationExerciseR",
+                   key = "78855640e0446676e4e6",
+                   secret = "8032ecc017dc65a355e5aaba3105330486b302e5")
+
+# Get OAuth credentials
+github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
+
+# Use API
+gtoken <- config(token = github_token)
+req <- GET("https://api.github.com/users/jtleek/repos", gtoken)
+
+# Take action on http error
+stop_for_status(req)
+
+# Extract content from a request
+json1 = content(req)
+
+# Convert to a data.frame
+gitDF = jsonlite::fromJSON(jsonlite::toJSON(json1))
+
+# Subset data.frame
+gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"] 
+
+# Answer: 
+# 2013-11-07T13:25:07Z
+
+
+#### Exercise 2##########
+The sqldf package allows for execution of SQL commands on R data frames. 
+We will use the sqldf package to practice the queries we might send with the dbSendQuery command in RMySQL. 
+Download the American Community Survey data and load it into an R object called 
+acs 
+https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv 
+
+Which of the following commands will select only the data for the probability weights pwgtp1 with ages less than 50? 
+
+# install.packages("sqldf")
+library("sqldf")
+
+url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
+f <- file.path(getwd(), "ss06pid.csv")
+download.file(url, f)
+acs <- data.table::data.table(read.csv(f))
+
+# Answer: 
+query1 <- sqldf("select pwgtp1 from acs where AGEP < 50")
