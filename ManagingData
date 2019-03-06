@@ -56,6 +56,89 @@ rbind
 
 #Notes http://www.biostat.jhsph.edu/~ajaffe/lec_winterR/Lecture%202.pdf
 
+#Summarizing Data
+
+#dataset restaurants baltimore - https://data.baltimorecity.gov/Community/Restaurants/k5ry-ef3g
+
+#Getting the data from web
+if(!file.exists("./data")){dir.create("./data")}
+fileUrl <- "https://data.baltimorecity.gov/api/views/k5ry-ef3g/rows.csv?accessType=DOWNLOAD"
+download.file(fileUrl,destfile="./data/restaurants.csv",method="curl")
+restData <- read.csv("./data/restaurantes.csv")
+
+#look at a bit of the data
+head(resData, n=3) #show the top three rows
+
+tail(resData, n=3) #show the bottom part of the dataset
+
+#make summary
+summary(resData)
+
+#More in depth information
+
+str(resData) #more information about data.frame
+
+#quantiles of quantiative variables
+
+quantile(resData$councilDistric.na.rm=TRUE)
+
+quantile(resData$councilDistrict, probs = c(0.5,0.75,0.9))
+
+#Make table -- look at specific variables and make a table
+
+table(restData$zipCode,useNA = "ifany") #useNa="ifany" -- if any.
+
+#Two dimensional tables
+
+table(restData$councilDistrict, restData$zipCode)
+
+#Checking for missing values
+sum(is.na(restData$councilDistrict)) 
+
+any (is.na(restData$councilDistrict))
+
+all(restData$zipCode >0) #check if every single value satisfies the condition
+
+#row and column sums
+colSums (is.na(restData))
+
+all(colSums(is.na(restData))==0)
+
+#Values with specific characteristics
+table(restData$zipCode %in% c("21212")) #wanna find all the zip codes that are equal (==) to 212121 or if there is any value (%in%)
+
+table(restData$zipCode %in% c("21212","21213")) #are any zip code either 212121 and 21213
+
+#Values with specific characteristics 
+
+restData[restData$zipCode %in% c("21212","21213"),] #new data set with only the rows that satisfies the condition.
+
+#Cross tabs
+
+data(UCBAdmissions)
+DF = as.data.frame(UCBAdmissions)
+summary(DF)
+
+xt <- xtabs(Freq ~ Gender + Admit, data=DF)
+xt
+
+#Flat tables --- value and break down
+warpbreaks$replicate <-rep(1:9, len = 54)
+xt=xtabs(breaks ~.,data=warpbreaks)
+xt
+
+ftable(xt) #compact form
+
+#Size of a data set
+fakeData = rnorm(1e5)
+object.size(fakeData)
+print(object.size(fakeData),units="Mb")
+
+
+
+
+
+
 
 
 
